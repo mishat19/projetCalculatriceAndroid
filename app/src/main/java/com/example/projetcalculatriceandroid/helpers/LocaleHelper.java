@@ -1,4 +1,4 @@
-package com.example.projetcalculatriceandroid;
+package com.example.projetcalculatriceandroid.helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
