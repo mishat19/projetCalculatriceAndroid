@@ -1,6 +1,7 @@
 package com.example.projetcalculatriceandroid;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -32,6 +33,12 @@ public class CalculatriceActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private boolean gameOver = false;
     private ImageView vie1, vie2, vie3;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        String lang = com.example.projetcalculatriceandroid.LocaleHelper.getLanguage(newBase);
+        super.attachBaseContext(com.example.projetcalculatriceandroid.LocaleHelper.setLocale(newBase, lang));
+    }
 
     public String generateRandomExpression() {
         Random random = new Random();
@@ -77,36 +84,6 @@ public class CalculatriceActivity extends AppCompatActivity {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    public double evaluateExpression(String expression) {
-        // Remplace les symboles pour uniformiser
-        expression = expression.replace("×", "*").replace("÷", "/");
-
-        // Utilise une pile pour gérer les opérations (algorithme de Shunting Yard)
-        // ou utilise une approche récursive pour les parenthèses.
-        // Ici, un exemple très simple pour les opérations de base SANS parenthèses :
-        String[] tokens = expression.split("(?<=[-+*/])|(?=[-+*/])");
-        double result = Double.parseDouble(tokens[0]);
-        for (int i = 1; i < tokens.length; i += 2) {
-            String operator = tokens[i];
-            double nextValue = Double.parseDouble(tokens[i + 1]);
-            switch (operator) {
-                case "+":
-                    result += nextValue;
-                    break;
-                case "-":
-                    result -= nextValue;
-                    break;
-                case "*":
-                    result *= nextValue;
-                    break;
-                case "/":
-                    result /= nextValue;
-                    break;
-            }
-        }
-        return result;
     }
 
     private double calculer(String expression) {

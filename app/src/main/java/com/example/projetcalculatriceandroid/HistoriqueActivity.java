@@ -1,5 +1,6 @@
 package com.example.projetcalculatriceandroid;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -14,6 +15,12 @@ public class HistoriqueActivity extends AppCompatActivity {
 
     private DatabaseHelper dbHelper;
     private TextView textViewScores;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        String lang = com.example.projetcalculatriceandroid.LocaleHelper.getLanguage(newBase);
+        super.attachBaseContext(com.example.projetcalculatriceandroid.LocaleHelper.setLocale(newBase, lang));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
