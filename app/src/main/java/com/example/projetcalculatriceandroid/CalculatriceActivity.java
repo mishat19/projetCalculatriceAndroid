@@ -19,6 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.example.projetcalculatriceandroid.helpers.LocaleHelper;
+
 import java.util.Random;
 
 public class CalculatriceActivity extends AppCompatActivity {
@@ -36,8 +39,8 @@ public class CalculatriceActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        String lang = com.example.projetcalculatriceandroid.LocaleHelper.getLanguage(newBase);
-        super.attachBaseContext(com.example.projetcalculatriceandroid.LocaleHelper.setLocale(newBase, lang));
+        String lang = LocaleHelper.getLanguage(newBase);
+        super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
     }
 
     public String generateRandomExpression() {
@@ -104,7 +107,7 @@ public class CalculatriceActivity extends AppCompatActivity {
             operateur = '/';
         }
 
-        String[] parties = expression.split("\\" + operateur);
+        String[] parties = expression.split(String.valueOf(operateur));
 
         double a = Double.parseDouble(parties[0].trim());
         double b = Double.parseDouble(parties[1].trim());
@@ -290,5 +293,13 @@ public class CalculatriceActivity extends AppCompatActivity {
         });
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean isScoreSaved() {
+        return scoreSaved;
+    }
+
+    public void setScoreSaved(boolean scoreSaved) {
+        this.scoreSaved = scoreSaved;
     }
 }

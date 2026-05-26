@@ -8,21 +8,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.content.res.Configuration;
 import androidx.appcompat.app.AppCompatDelegate;
-import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class SettingsActivity extends AppCompatActivity {
+import com.example.projetcalculatriceandroid.helpers.LocaleHelper;
 
-    private Spinner spinnerLangue;
-    private Spinner spinnerTheme;
+public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        String lang = com.example.projetcalculatriceandroid.LocaleHelper.getLanguage(newBase);
-        super.attachBaseContext(com.example.projetcalculatriceandroid.LocaleHelper.setLocale(newBase, lang));
+        String lang = LocaleHelper.getLanguage(newBase);
+        super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
     }
 
     @Override
@@ -30,8 +27,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        spinnerLangue = findViewById(R.id.spinnerLangue);
-        spinnerTheme = findViewById(R.id.spinnerTheme);
+        Spinner spinnerLangue = findViewById(R.id.spinnerLangue);
+        Spinner spinnerTheme = findViewById(R.id.spinnerTheme);
 
         String[] langues = {"Français", "Russe"};
         String[] themes = {"Clair", "Sombre"};
@@ -63,14 +60,18 @@ public class SettingsActivity extends AppCompatActivity {
         String langue = prefs.getString("language", "fr");
         String theme = prefs.getString("theme", "light");
 
-// Position du spinner langue
+        // Position du spinner langue
+        assert langue != null;
+
         if (langue.equals("fr")) {
             spinnerLangue.setSelection(0);
         } else {
             spinnerLangue.setSelection(1);
         }
 
-// Position du spinner thème
+        // Position du spinner thème
+        assert theme != null;
+
         if (theme.equals("light")) {
             spinnerTheme.setSelection(0);
         } else {
@@ -93,7 +94,7 @@ public class SettingsActivity extends AppCompatActivity {
                         .putString("language", codeLangue)
                         .apply();
 
-                com.example.projetcalculatriceandroid.LocaleHelper.setLocale(SettingsActivity.this, codeLangue);
+                LocaleHelper.setLocale(SettingsActivity.this, codeLangue);
 
                 restartParent();
 

@@ -11,6 +11,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.projetcalculatriceandroid.helpers.LocaleHelper;
+
 public class HistoriqueActivity extends AppCompatActivity {
 
     private DatabaseHelper dbHelper;
@@ -18,8 +20,8 @@ public class HistoriqueActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        String lang = com.example.projetcalculatriceandroid.LocaleHelper.getLanguage(newBase);
-        super.attachBaseContext(com.example.projetcalculatriceandroid.LocaleHelper.setLocale(newBase, lang));
+        String lang = LocaleHelper.getLanguage(newBase);
+        super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
     }
 
     @Override

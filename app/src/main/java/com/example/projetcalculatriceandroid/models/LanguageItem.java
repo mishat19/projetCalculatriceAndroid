@@ -19,8 +19,4 @@ public class LanguageItem {
     public int getFlagRes() {
         return flagRes;
     }
-
-    public String getLocaleCode() {
-        return localeCode;
-    }
 }

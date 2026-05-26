@@ -14,14 +14,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.projetcalculatriceandroid.helpers.LocaleHelper;
+
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        String lang = com.example.projetcalculatriceandroid.LocaleHelper.getLanguage(newBase);
-        super.attachBaseContext(com.example.projetcalculatriceandroid.LocaleHelper.setLocale(newBase, lang));
+        String lang = LocaleHelper.getLanguage(newBase);
+        super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
     }
 
     @Override
@@ -45,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        assert theme != null;
+
         if(theme.equals("dark")) {
             AppCompatDelegate.setDefaultNightMode(
                     AppCompatDelegate.MODE_NIGHT_YES);
@@ -53,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(
                     AppCompatDelegate.MODE_NIGHT_NO);
         }
+
+        assert language != null;
 
         Locale locale = new Locale(language);
         Locale.setDefault(locale);
