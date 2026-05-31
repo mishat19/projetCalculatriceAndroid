@@ -8,13 +8,29 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Switch;
 import androidx.appcompat.app.AppCompatDelegate;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.projetcalculatriceandroid.helpers.LocaleHelper;
 
 public class SettingsActivity extends AppCompatActivity {
+
+    // 🌍 Tableaux de configuration (à modifier pour ajouter des langues/thèmes/sons)
+    private static final String[][] LANGUAGES = {
+            {"Français", "fr"},
+            {"Anglais", "en"},
+            {"Russe", "ru"}
+    };
+
+    private static final String[][] THEMES = {
+            {"Clair", "light"},
+            {"Sombre", "dark"}
+    };
+
+    private static final String[][] SOUNDS = {
+            {"Activés", "true"},
+            {"Désactivés", "false"}
+    };
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -27,115 +43,94 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        // 🔹 Récupération des vues
         Spinner spinnerLangue = findViewById(R.id.spinnerLangue);
         Spinner spinnerTheme = findViewById(R.id.spinnerTheme);
+        Switch switchSounds = findViewById(R.id.switchSounds); // 🔊 Switch pour les sons
 
-        String[] langues = {"Français", "Russe"};
-        String[] themes = {"Clair", "Sombre"};
+        // 🔹 Initialisation des SharedPreferences (pour sauvegarder les paramètres)
+        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
 
-        ArrayAdapter<String> adapterLangues =
-                new ArrayAdapter<>(this,
-                        android.R.layout.simple_spinner_item,
-                        langues);
+        // 🌍 Initialisation du Spinner pour les langues
+        setupSpinner(spinnerLangue, LANGUAGES, "language", (position, code) -> {
+            LocaleHelper.setLocale(this, code);
+            restartParent(); // Redémarre l'activité pour appliquer la langue
+        });
 
-        adapterLangues.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item);
+        // 🎨 Initialisation du Spinner pour les thèmes
+        setupSpinner(spinnerTheme, THEMES, "theme", (position, code) -> {
+            int nightMode = code.equals("dark") ?
+                    AppCompatDelegate.MODE_NIGHT_YES :
+                    AppCompatDelegate.MODE_NIGHT_NO;
+            AppCompatDelegate.setDefaultNightMode(nightMode);
+        });
 
-        spinnerLangue.setAdapter(adapterLangues);
+        // 🔊 Initialisation du Switch pour les sons
+        boolean soundsEnabled = prefs.getBoolean("sounds_enabled", true); // Par défaut : activé
+        switchSounds.setChecked(soundsEnabled);
 
-        ArrayAdapter<String> adapterThemes =
-                new ArrayAdapter<>(this,
-                        android.R.layout.simple_spinner_item,
-                        themes);
+        // 🔊 Écouteur pour le Switch : sauvegarde l'état quand il change
+        switchSounds.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean("sounds_enabled", isChecked).apply();
+        });
+    }
 
-        adapterThemes.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item);
-
-        spinnerTheme.setAdapter(adapterThemes);
-
-        SharedPreferences prefs =
-                getSharedPreferences("settings", MODE_PRIVATE);
-
-// Restaurer les choix enregistrés
-        String langue = prefs.getString("language", "fr");
-        String theme = prefs.getString("theme", "light");
-
-        // Position du spinner langue
-        assert langue != null;
-
-        if (langue.equals("fr")) {
-            spinnerLangue.setSelection(0);
-        } else {
-            spinnerLangue.setSelection(1);
+    // 🔧 Méthode générique pour configurer un Spinner
+    private void setupSpinner(Spinner spinner, String[][] items, String prefKey, SpinnerCallback callback) {
+        // 1️⃣ Extraire les noms affichables (ex: "Français", "Clair")
+        String[] displayNames = new String[items.length];
+        for (int i = 0; i < items.length; i++) {
+            displayNames[i] = items[i][0]; // Premier élément = nom affiché
         }
 
-        // Position du spinner thème
-        assert theme != null;
+        // 2️⃣ Adapter pour le Spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                displayNames
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
 
-        if (theme.equals("light")) {
-            spinnerTheme.setSelection(0);
-        } else {
-            spinnerTheme.setSelection(1);
+        // 3️⃣ Récupère la valeur sauvegardée
+        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        String savedValue = prefs.getString(prefKey, items[0][1]); // Valeur par défaut = premier élément
+
+        // 4️⃣ Trouve la position de la valeur sauvegardée
+        int savedPosition = 0;
+        for (int i = 0; i < items.length; i++) {
+            if (items[i][1].equals(savedValue)) {
+                savedPosition = i;
+                break;
+            }
         }
+        spinner.setSelection(savedPosition);
 
-        // Changement de langue
-        spinnerLangue.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            boolean first = true;
-
+        // 5️⃣ Gère la sélection (évite le déclenchement au premier chargement)
+        final boolean[] firstSelection = {true};
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                if (first) { first = false; return; }
-
-                String codeLangue = (position == 0) ? "fr" : "ru";
-
-                prefs.edit()
-                        .putString("language", codeLangue)
-                        .apply();
-
-                LocaleHelper.setLocale(SettingsActivity.this, codeLangue);
-
-                restartParent();
-
+                if (firstSelection[0]) {
+                    firstSelection[0] = false;
+                    return;
+                }
+                String code = items[position][1]; // Deuxième élément = code (ex: "fr", "dark")
+                prefs.edit().putString(prefKey, code).apply();
+                callback.onSelected(position, code);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
-
-
         });
-
-        // Changement de thème
-        spinnerTheme.setOnItemSelectedListener(
-                new android.widget.AdapterView.OnItemSelectedListener() {
-
-                    @Override
-                    public void onItemSelected(android.widget.AdapterView<?> parent,
-                                               android.view.View view,
-                                               int position,
-                                               long id) {
-
-                        String theme = (position == 0) ? "light" : "dark";
-
-                        prefs.edit()
-                                .putString("theme", theme)
-                                .apply();
-
-                        if (theme.equals("dark")) {
-                            AppCompatDelegate.setDefaultNightMode(
-                                    AppCompatDelegate.MODE_NIGHT_YES);
-                        } else {
-                            AppCompatDelegate.setDefaultNightMode(
-                                    AppCompatDelegate.MODE_NIGHT_NO);
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-                });
     }
 
+    // 🎯 Interface pour les callbacks des Spinners
+    private interface SpinnerCallback {
+        void onSelected(int position, String code);
+    }
+
+    // 🔄 Redémarre l'activité parent (MainActivity)
     private void restartParent() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
