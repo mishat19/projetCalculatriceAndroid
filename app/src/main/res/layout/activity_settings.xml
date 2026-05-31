@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Paramètres"
+        android:text="@string/settings_title"
         android:textSize="30sp"
         android:textStyle="bold"
         android:layout_marginBottom="30dp"/>
@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Langue"/>
+        android:text="@string/settings_langue"/>
 
     <Spinner
         android:id="@+id/spinnerLangue"
@@ -26,7 +26,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thème"
+        android:text="@string/setting_theme"
         android:layout_marginTop="20dp"/>
 
     <Spinner
@@ -44,7 +44,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Sons"
+            android:text="@string/settings_sounds"
             android:textSize="18sp" />
 
         <Switch

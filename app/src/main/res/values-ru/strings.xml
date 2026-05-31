@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name" translatable="false">Don Calculator</string>
+    <string name="test_bouton_jouer">Играть</string>
+    <string name="test_bouton_highscore">Таблица лидеров</string>
+    <string name="test_bouton_settings">Настройки</string>
+
+    <!-- Кнопки калькулятора -->
+    <string name="text_bouton_plus">+</string>
+    <string name="text_bouton_moins">-</string>
+    <string name="text_bouton_mult">×</string>
+    <string name="text_bouton_div">÷</string>
+    <string name="text_bouton_9">9</string>
+    <string name="text_bouton_8">8</string>
+    <string name="text_bouton_7">7</string>
+    <string name="text_bouton_6">6</string>
+    <string name="text_bouton_5">5</string>
+    <string name="text_bouton_4">4</string>
+    <string name="text_bouton_3">3</string>
+    <string name="text_bouton_2">2</string>
+    <string name="text_bouton_1">1</string>
+    <string name="text_bouton_0">0</string>
+
+    <!-- Игра -->
+    <string name="score_label">Счёт: %d</string>
+    <string name="game_over_message">Игра окончена! Счёт: %d</string>
+    <string name="enter_pseudo_hint">Ваш ник</string>
+    <string name="save_score_button">Сохранить счёт</string>
+    <string name="true_answer">Верно</string>
+    <string name="false_answer">Неверно</string>
+    <string name="game_verify">проверить</string>
+
+    <!-- Настройки -->
+    <string name="setting_theme">Тема</string>
+    <string name="settings_langue">Язык</string>
+    <string name="settings_title">Настройки</string>
+    <string name="settings_sounds">Звук</string>
+    <string name="leaderboard_title">🏆 Таблица лидеров 🏆</string>
+</resources>

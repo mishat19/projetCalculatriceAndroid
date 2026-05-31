@@ -17,4 +17,16 @@
     <string name="text_bouton_2">2</string>
     <string name="text_bouton_1">1</string>
     <string name="text_bouton_0">0</string>
+    <string name="score_label">Score: %d</string>
+    <string name="game_over_message">Game Over ! Score : %d</string>
+    <string name="enter_pseudo_hint">Ton pseudo</string>
+    <string name="save_score_button">Enregistrer score</string>
+    <string name="true_answer">Vrai</string>
+    <string name="false_answer">Faux</string>
+    <string name="setting_theme">Thème</string>
+    <string name="settings_langue">Langue</string>
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_sounds">Sons</string>
+    <string name="leaderboard_title">🏆 Classement 🏆</string>
+    <string name="game_verify">Vérifier</string>
 </resources>

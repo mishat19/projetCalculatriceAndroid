@@ -3,10 +3,12 @@
     <string name="test_bouton_jouer">Play</string>
     <string name="test_bouton_highscore">Leaderboard</string>
     <string name="test_bouton_settings">Settings</string>
+
+    <!-- Boutons de la calculatrice -->
     <string name="text_bouton_plus">+</string>
     <string name="text_bouton_moins">-</string>
-    <string name="text_bouton_mult">x</string>
-    <string name="text_bouton_div">/</string>
+    <string name="text_bouton_mult">×</string>
+    <string name="text_bouton_div">÷</string>
     <string name="text_bouton_9">9</string>
     <string name="text_bouton_8">8</string>
     <string name="text_bouton_7">7</string>
@@ -17,4 +19,20 @@
     <string name="text_bouton_2">2</string>
     <string name="text_bouton_1">1</string>
     <string name="text_bouton_0">0</string>
+
+    <!-- Jeu -->
+    <string name="score_label">Score: %d</string>
+    <string name="game_over_message">Game Over! Score: %d</string>
+    <string name="enter_pseudo_hint">Your username</string>
+    <string name="save_score_button">Save score</string>
+    <string name="true_answer">Correct</string>
+    <string name="false_answer">Wrong</string>
+    <string name="game_verify">Verify</string>
+
+    <!-- Paramètres -->
+    <string name="setting_theme">Theme</string>
+    <string name="settings_langue">Language</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_sounds">Sounds</string>
+    <string name="leaderboard_title">🏆 Leaderboard 🏆</string>
 </resources>
