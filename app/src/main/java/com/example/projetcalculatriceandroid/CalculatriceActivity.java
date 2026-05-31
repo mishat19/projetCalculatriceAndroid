@@ -1,15 +1,24 @@
 package com.example.projetcalculatriceandroid;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -36,6 +45,13 @@ public class CalculatriceActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private boolean gameOver = false;
     private ImageView vie1, vie2, vie3;
+    private TextView scoreTextView;
+
+    private MediaPlayer correctSound;
+    private MediaPlayer wrongSound;
+
+    private FrameLayout animationContainer;
+    private Random random = new Random();
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -94,33 +110,25 @@ public class CalculatriceActivity extends AppCompatActivity {
         expression = expression.replace("×", "*");
         expression = expression.replace("x", "*");
         expression = expression.replace("÷", "/");
+        expression = expression.replace(" ", "");
 
-        char operateur = ' ';
+        String operator = "";
 
-        if (expression.contains("+")) {
-            operateur = '+';
-        } else if (expression.contains("-")) {
-            operateur = '-';
-        } else if (expression.contains("*")) {
-            operateur = '*';
-        } else if (expression.contains("/")) {
-            operateur = '/';
-        }
+        if (expression.contains("+")) operator = "+";
+        else if (expression.contains("-")) operator = "-";
+        else if (expression.contains("*")) operator = "*";
+        else if (expression.contains("/")) operator = "/";
 
-        String[] parties = expression.split(String.valueOf(operateur));
+        String[] parts = expression.split("\\" + operator);
 
-        double a = Double.parseDouble(parties[0].trim());
-        double b = Double.parseDouble(parties[1].trim());
+        double a = Double.parseDouble(parts[0]);
+        double b = Double.parseDouble(parts[1]);
 
-        switch (operateur) {
-            case '+':
-                return a + b;
-            case '-':
-                return a - b;
-            case '*':
-                return a * b;
-            case '/':
-                return a / b;
+        switch (operator) {
+            case "+": return a + b;
+            case "-": return a - b;
+            case "*": return a * b;
+            case "/": return a / b;
         }
 
         return 0;
@@ -141,14 +149,14 @@ public class CalculatriceActivity extends AppCompatActivity {
         layout.setPadding(50, 50, 50, 50);
 
         TextView text = new TextView(this);
-        text.setText("Game Over ! Score : " + calculerScore());
+        text.setText(getString(R.string.game_over_message, calculerScore()));
         text.setTextSize(20);
 
         EditText inputPseudo = new EditText(this);
-        inputPseudo.setHint("Ton pseudo");
+        inputPseudo.setHint(getString(R.string.enter_pseudo_hint));
 
         Button btnSave = new Button(this);
-        btnSave.setText("Enregistrer score");
+        btnSave.setText(getString(R.string.save_score_button));
 
         layout.addView(text);
         layout.addView(inputPseudo);
@@ -199,6 +207,86 @@ public class CalculatriceActivity extends AppCompatActivity {
         return score;
     }
 
+    private void updateScore() {
+        scoreTextView.setText(getString(R.string.score_label, score));
+    }
+
+    private void playSound(MediaPlayer sound) {
+        if (sound != null) {
+            sound.setVolume(1.0f, 1.0f);
+            sound.start();
+        }
+    }
+
+    private void showScoreAnimation() {
+        // Crée une TextView pour afficher "+10"
+        TextView scoreText = new TextView(this);
+        scoreText.setText("+10");
+        scoreText.setTextSize(24f); // Taille du texte
+        scoreText.setTypeface(null, Typeface.BOLD); // Texte en gras
+
+        // Génère une couleur aléatoire (claire pour être visible)
+        int color = Color.rgb(
+                random.nextInt(200) + 55,  // Rouge (55-255)
+                random.nextInt(200) + 55,  // Vert (55-255)
+                random.nextInt(200) + 55   // Bleu (55-255)
+        );
+        scoreText.setTextColor(color);
+
+        // Positionne la TextView au centre de l'écran
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.gravity = Gravity.CENTER;
+        scoreText.setLayoutParams(params);
+
+        // Ajoute la TextView au conteneur d'animation
+        animationContainer.addView(scoreText);
+
+        // Animation : agrandit puis réduit la taille (effet "pop")
+        ObjectAnimator scaleX = ObjectAnimator.ofFloat(scoreText, "scaleX", 1f, 1.5f, 1f);
+        ObjectAnimator scaleY = ObjectAnimator.ofFloat(scoreText, "scaleY", 1f, 1.5f, 1f);
+        ObjectAnimator alpha = ObjectAnimator.ofFloat(scoreText, "alpha", 1f, 0f); // Disparition
+
+        // Déplace la TextView vers le haut pendant l'animation
+        ObjectAnimator translateY = ObjectAnimator.ofFloat(
+                scoreText,
+                "translationY",
+                0f,
+                -200f  // Monte de 200 pixels
+        );
+
+        // Regroupe les animations
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(scaleX, scaleY, alpha, translateY);
+        animatorSet.setDuration(1000); // Durée : 1 seconde
+
+        // Supprime la TextView après l'animation
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                animationContainer.removeView(scoreText);
+            }
+        });
+
+        animatorSet.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Libère les MediaPlayer
+        if (correctSound != null) {
+            correctSound.release();
+            correctSound = null;
+        }
+        if (wrongSound != null) {
+            wrongSound.release();
+            wrongSound = null;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -224,15 +312,28 @@ public class CalculatriceActivity extends AppCompatActivity {
         Button bouton_1 = findViewById(R.id.bouton_1);
         Button bouton_0 = findViewById(R.id.bouton_0);
 
+        Button boutonCheck = findViewById(R.id.bouton_check);
+        Button boutonDelete = findViewById(R.id.bouton_delete);
+        Button boutonSymbol = findViewById(R.id.bouton_symbol);
+
         textViewCalcul = findViewById(R.id.calcul);
         textViewResultat = findViewById(R.id.resultat);
 
         calculCourant = generateRandomExpression();
         textViewCalcul.setText(calculCourant);
 
+        scoreTextView = findViewById(R.id.score);
+        updateScore();
+
         vie1 = findViewById(R.id.vie1);
         vie2 = findViewById(R.id.vie2);
         vie3 = findViewById(R.id.vie3);
+
+        // Initialisation des sons
+        correctSound = MediaPlayer.create(this, R.raw.correct_answer);
+        wrongSound = MediaPlayer.create(this, R.raw.wrong_answer);
+
+        animationContainer = findViewById(R.id.animation_container);
 
         // Méthode commune pour les boutons numériques
         Button[] boutonsNumeriques = {bouton_0, bouton_1, bouton_2, bouton_3, bouton_4, bouton_5, bouton_6, bouton_7, bouton_8, bouton_9};
@@ -241,6 +342,48 @@ public class CalculatriceActivity extends AppCompatActivity {
                 textViewResultat.append(((Button) v).getText());
             });
         }
+
+        boutonDelete.setOnClickListener(v -> {
+            String current = textViewResultat.getText().toString();
+
+            if (!current.isEmpty()) {
+                textViewResultat.setText(current.substring(0, current.length() - 1));
+            }
+        });
+
+        boutonCheck.setOnClickListener(v -> {
+
+            if (gameOver) return;
+
+            String reponseUtilisateur = textViewResultat.getText().toString();
+
+            boolean correct = checkAnswer(reponseUtilisateur, calculCourant);
+
+            if (correct) {
+                textViewResultat.setText(getString(R.string.true_answer));
+                score += 10;
+                updateScore();
+                showScoreAnimation();
+                playSound(correctSound);
+            } else {
+                vies--;
+                updateVies();
+                textViewResultat.setText(getString(R.string.false_answer));
+                playSound(wrongSound);
+            }
+
+            if (vies <= 0) {
+                gameOver = true;
+                afficherGameOver();
+                return;
+            }
+
+            textViewResultat.postDelayed(() -> {
+                calculCourant = generateRandomExpression();
+                textViewCalcul.setText(calculCourant);
+                textViewResultat.setText("");
+            }, 1200);
+        });
     }
 
     @Override
@@ -293,13 +436,5 @@ public class CalculatriceActivity extends AppCompatActivity {
         });
 
         return super.onCreateOptionsMenu(menu);
-    }
-
-    public boolean isScoreSaved() {
-        return scoreSaved;
-    }
-
-    public void setScoreSaved(boolean scoreSaved) {
-        this.scoreSaved = scoreSaved;
     }
 }
