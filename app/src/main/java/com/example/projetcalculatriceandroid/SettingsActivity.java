@@ -15,7 +15,7 @@ import com.example.projetcalculatriceandroid.helpers.LocaleHelper;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    // 🌍 Tableaux de configuration (à modifier pour ajouter des langues/thèmes/sons)
+    // Tableaux de configuration
     private static final String[][] LANGUAGES = {
             {"Français", "fr"},
             {"Anglais", "en"},
@@ -43,21 +43,21 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        // 🔹 Récupération des vues
+        // Récupération des vues
         Spinner spinnerLangue = findViewById(R.id.spinnerLangue);
         Spinner spinnerTheme = findViewById(R.id.spinnerTheme);
-        Switch switchSounds = findViewById(R.id.switchSounds); // 🔊 Switch pour les sons
+        Switch switchSounds = findViewById(R.id.switchSounds);
 
-        // 🔹 Initialisation des SharedPreferences (pour sauvegarder les paramètres)
+        // Initialisation des SharedPreferences
         SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
 
-        // 🌍 Initialisation du Spinner pour les langues
+        // Initialisation du Spinner pour les langues
         setupSpinner(spinnerLangue, LANGUAGES, "language", (position, code) -> {
             LocaleHelper.setLocale(this, code);
             restartParent(); // Redémarre l'activité pour appliquer la langue
         });
 
-        // 🎨 Initialisation du Spinner pour les thèmes
+        // Initialisation du Spinner pour les thèmes
         setupSpinner(spinnerTheme, THEMES, "theme", (position, code) -> {
             int nightMode = code.equals("dark") ?
                     AppCompatDelegate.MODE_NIGHT_YES :
@@ -65,25 +65,24 @@ public class SettingsActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(nightMode);
         });
 
-        // 🔊 Initialisation du Switch pour les sons
+        // Initialisation du Switch pour les sons
         boolean soundsEnabled = prefs.getBoolean("sounds_enabled", true); // Par défaut : activé
         switchSounds.setChecked(soundsEnabled);
 
-        // 🔊 Écouteur pour le Switch : sauvegarde l'état quand il change
+        // Écouteur pour le Switch : sauvegarde l'état quand il change
         switchSounds.setOnCheckedChangeListener((buttonView, isChecked) -> {
             prefs.edit().putBoolean("sounds_enabled", isChecked).apply();
         });
     }
 
-    // 🔧 Méthode générique pour configurer un Spinner
+    // Méthode générique pour configurer un Spinner
     private void setupSpinner(Spinner spinner, String[][] items, String prefKey, SpinnerCallback callback) {
-        // 1️⃣ Extraire les noms affichables (ex: "Français", "Clair")
+        // Extraire les noms affichables
         String[] displayNames = new String[items.length];
         for (int i = 0; i < items.length; i++) {
-            displayNames[i] = items[i][0]; // Premier élément = nom affiché
+            displayNames[i] = items[i][0];
         }
 
-        // 2️⃣ Adapter pour le Spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -92,11 +91,11 @@ public class SettingsActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        // 3️⃣ Récupère la valeur sauvegardée
+        // Récupère la valeur sauvegardée
         SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        String savedValue = prefs.getString(prefKey, items[0][1]); // Valeur par défaut = premier élément
+        String savedValue = prefs.getString(prefKey, items[0][1]);
 
-        // 4️⃣ Trouve la position de la valeur sauvegardée
+        // Trouve la position de la valeur sauvegardée
         int savedPosition = 0;
         for (int i = 0; i < items.length; i++) {
             if (items[i][1].equals(savedValue)) {
@@ -106,7 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
         spinner.setSelection(savedPosition);
 
-        // 5️⃣ Gère la sélection (évite le déclenchement au premier chargement)
+        // Gère la sélection (évite le déclenchement au premier chargement)
         final boolean[] firstSelection = {true};
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -115,7 +114,7 @@ public class SettingsActivity extends AppCompatActivity {
                     firstSelection[0] = false;
                     return;
                 }
-                String code = items[position][1]; // Deuxième élément = code (ex: "fr", "dark")
+                String code = items[position][1]; // 2e élément
                 prefs.edit().putString(prefKey, code).apply();
                 callback.onSelected(position, code);
             }
@@ -125,12 +124,12 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    // 🎯 Interface pour les callbacks des Spinners
+    // Interface pour les callbacks des Spinners
     private interface SpinnerCallback {
         void onSelected(int position, String code);
     }
 
-    // 🔄 Redémarre l'activité parent (MainActivity)
+    // Redémarre l'activité parent (MainActivity)
     private void restartParent() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
